@@ -26,10 +26,10 @@ from pympler import asizeof
 
 class TasksQueueClass:
     __slots__ =  ['elems_tasks', 'elems_revision', 'elems_decided']
-    def __init__(self, tasks):
+    def __init__(self, tasks, rev, decid):
         self.elems_tasks = tasks
-        self.elems_revision = []
-        self.elems_decided = []
+        self.elems_revision = rev
+        self.elems_decided = decid
 
     def is_empty_revision(self):
         return self.elems_revision == []
@@ -70,11 +70,11 @@ class TasksQueueClass:
 
 @profile
 def my_func():
-    task = TasksQueueClass(['task' + str(i) for i in range(100000)])
+    task = TasksQueueClass(['task' + str(i) for i in range(10000)], ['rev' + str(i) for i in range(10000)],
+                           ['decid' + str(i) for i in range(10000)])
     task2 = task
     print(f'размер объекта класса: {asizeof.asizeof((task))}')
     task.pop_out_task()
-    task.push_in_revision()
     del task
     del task2
 
@@ -83,16 +83,22 @@ def my_func():
 my_func()
 
 '''Python 3.8 OS 64
-размер объекта класса: 7216624
+
+Если сравнить с примером без слотов, то память на объект класса выделяется чуть меньше, 
+потому что мы избавились от словаря. Правда разница не существенная, 
+так как переменные всего три и все они представляют из себя список.
+размер объекта класса: 2094104
+Filename: C:/Users/mkharitonov/Desktop/Обучение/урок6/task_1_3_2.py
 Line #    Mem usage    Increment  Occurences   Line Contents
 ============================================================
-    71     99.2 MiB     99.2 MiB           1   @profile
+    71     99.4 MiB     99.4 MiB           1   @profile
     72                                         def my_func():
-    73    106.3 MiB      7.1 MiB      100003       task = TasksQueueClass(['task' + str(i) for i in range(100000)])
-    74    106.3 MiB      0.0 MiB           1       task2 = task
-    75    107.4 MiB      1.0 MiB           1       print(f'размер объекта класса: {asizeof.asizeof((task))}')
-    76    107.4 MiB      0.0 MiB           1       task.pop_out_task()
-    77    107.4 MiB      0.0 MiB           1       task.push_in_revision()
-    78    107.4 MiB      0.0 MiB           1       del task
-    79     99.7 MiB     -7.6 MiB           1       del task2
+    73    101.6 MiB      1.4 MiB       20006       task = TasksQueueClass(['task' + str(i) for i in range(10000)], ['rev' + str(i) for i in range(10000)],
+    74    101.6 MiB      0.7 MiB       10003                              ['decid' + str(i) for i in range(10000)])
+    75    101.6 MiB      0.0 MiB           1       task2 = task
+    76    103.1 MiB      1.5 MiB           1       print(f'размер объекта класса: {asizeof.asizeof((task))}')
+    77    103.1 MiB      0.0 MiB           1       task.pop_out_task()
+    78    103.1 MiB      0.0 MiB           1       del task
+    79    100.7 MiB     -2.4 MiB           1       del task2
+
 '''
